@@ -10,3 +10,4 @@ obj
 *.swp
 *.un
 run.sh
+build.sh
