@@ -13,6 +13,10 @@ namespace HashFunction {
 	/* Implements the FNV-1a hashing algorithm */
 	unsigned int hash(const void* in, int size);
 
+	/* I don't know why this is necessary, but it
+	 * didn't compile and stack overflow told me
+	 * to do this. So yeah, templates are weird
+	 * when you pass multiple types, I guess. */
 	template <typename...> struct table_el;
 	template <typename...> struct table;
 
@@ -88,17 +92,23 @@ namespace HashFunction {
 		int count = 0;
 		int capacity = 0;
 
+		/* Resize the array, given a new capacity
+		 *
+		 * This function is quite slow, since it iterates the table essentially
+		 * three times: the new capacity (which is just the old capacity multiplied
+		 * by two in most cases) to setup the new data, then iterates the old
+		 * capacity to copy the old values to the new array. Luckily, it
+		 * doesn't get called too much if the load factor is tweaked effectively*/
 		void resize(int new_capacity) {
-			/* So, I was using malloc to allocate here, as I do normally for buffers.
-			 * 
-			 * It was crashing when working with std::strings, turns out move semantics
-			 * completely fail when you use malloc. That was a waste of 20 minutes. */
+			/* Allocate a new array of size new capacity and setup the
+			 * default values of each element. */
 			table_el<key_t, value_t>* els = new table_el<key_t, value_t>[new_capacity];
 			for (int i = 0; i < new_capacity; i++) {
 				els[i].is_null = true;
 				els[i].is_tombstone = false;
 			}
 
+			/* Copy all the old elements to the new array */
 			for (int i = 0; i < capacity; i++) {
 				table_el<key_t, value_t>* el = &elements[i];
 				if (el->is_null) { continue; }
@@ -109,6 +119,7 @@ namespace HashFunction {
 			}
 
 			if (elements) {
+				/* Free up the old memory */
 				delete[] elements;
 			}
 
@@ -147,15 +158,12 @@ namespace HashFunction {
 			return el->value;
 		}
 
+		/* Const overload. */
 		const value_t& get(const key_t& key) const {
-			if (count == 0) { throw std::out_of_range("Key not found in table."); }
-
-			table_el<key_t, value_t>* el = find_element(elements, capacity, key);
-			if (el->is_null) { throw std::out_of_range("Key not found in table."); }
-
-			return el->value;
+			return get(key);
 		}
 
+		/* Remove an element */
 		void remove(const key_t& key) {
 			if (count == 0) { return; }
 
@@ -169,6 +177,11 @@ namespace HashFunction {
 			count--;
 		}
 
+		/* Overloading the [] operator so that it can
+		 * be used similarly to an std::map.
+		 *
+		 * I couldn't figure out how to make it able
+		 * to set a value like std::map does, though... */
 		const value_t& operator[](const key_t& key) const {
 			return get(key);
 		}
