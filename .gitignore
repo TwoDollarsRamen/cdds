@@ -7,4 +7,6 @@ obj
 *.user
 *.filters
 *.vs
+*.swp
+*.un
 run.sh

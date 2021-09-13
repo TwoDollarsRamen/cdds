@@ -7,3 +7,4 @@ include "ext/imgui"
 include "ext/glfw"
 
 include "linkedlist"
+include "bintree"

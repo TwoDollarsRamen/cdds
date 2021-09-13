@@ -14,7 +14,7 @@ struct list_node {
 
 /* Implements a double linked list
  *
- * Almost the entirety of this structure is
+ * The entirety of this structure is
  * implemented in the header, since that is
  * required for templates. */
 template <typename T>
@@ -22,36 +22,42 @@ struct list {
 	list_node<T>* head = nullptr;
 	list_node<T>* tail = nullptr;
 
+	/* Insert an element with value `v' after node `node'. */
 	list_node<T>* insert(list_node<T>* node, const T& v) {
-		list_node<T>* nn = new list_node<T>(v);
+		auto new_node = new list_node<T>(v);
 
-		nn->next = node;
+		new_node->next = node;
 
 		if (node) {
-			nn->prev = node->prev;
+			new_node->prev = node->prev;
 
 			if (node->prev) {
-				node->prev->next = nn;
+				node->prev->next = new_node;
 			}
-			node->prev = nn;
+			node->prev = new_node;
 		}
 
 		if (head == node) {
-			head = nn;
+			head = new_node;
 		}
 
 		if (!tail) {
-			tail = nn;
+			tail = new_node;
 		}
 
-		return nn;
+		return new_node;
 	}
 
+	/* Remove node `node' */
 	void remove(list_node<T>* node) {
 		if (!head || !node) { return; }
 
 		if (head == node) {
 			head = node->next;
+		}
+
+		if (tail == node) {
+			tail = node->prev;
 		}
 
 		if (node->next) {
@@ -65,16 +71,21 @@ struct list {
 		delete node;
 	}
 
+	/* Add an element with value `v' at the head
+	 * of the list*/
 	list_node<T>* push_front(const T& v) {
 		return insert(head, v);
 	}
 
+	/* Add an element with value `v' at the tail
+	 * of the list */
 	list_node<T>* push_back(const T& v) {
 		return insert(tail, v);
 	}
 
+	/* Get the amount of elements in the list */
 	int count() {
-		list_node<T>* cur = head;
+		auto cur = head;
 
 		int r = 0;
 
@@ -87,21 +98,29 @@ struct list {
 		return r;
 	}
 
+	/* Get the head */
 	list_node<T>* first() {
 		return head;
 	}
 
+	/* Get the tail */
 	list_node<T>* last() {
 		return tail;
 	}
 
+	/* Is the list empty? */
 	bool empty() { return !head; }
 
+	/* Sort the list. */
+	void sort() {
+
+	}
+
 	~list() {
-		list_node<T>* cur = head;
+		auto cur = head;
 
 		while (cur) {
-			list_node<T>* temp = cur;
+			auto temp = cur;
 			cur = cur->next;
 			delete temp;
 		}

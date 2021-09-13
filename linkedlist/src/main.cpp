@@ -1,3 +1,6 @@
+#include <string>
+#include <functional>
+
 #include <GLFW/glfw3.h>
 
 #include <imgui.h>
@@ -19,7 +22,7 @@
  * Dear ImGui backends such as the Vulkan or DirectX backends.
  *
  * I'm using the OpenGL 2 backend instead of the modern one
- * because my Windows virtual machine doesn't support OpenGL 3.x*/
+ * because my Windows virtual machine doesn't support OpenGL 3.x. */
 
 #include "list.hpp"
 
@@ -27,7 +30,11 @@ static void framebuffer_size_func(GLFWwindow* window, int x, int y) {
 	glViewport(0, 0, x, y);
 }
 
+void run_tests();
+
 int main() {
+	run_tests();
+
 	glfwInit();
 
 	GLFWwindow* window = glfwCreateWindow(1024, 768, "Linked List demo", nullptr, nullptr);
@@ -62,6 +69,10 @@ int main() {
 		if (ImGui::Begin("Linked List Demo")) {
 			ImGui::Text("List count: %d", some_list.count());
 
+			if (ImGui::Button("Sort List")) {
+				some_list.sort();
+			}
+
 			ImGui::DragInt("###VINPUT", &create_value); ImGui::SameLine();
 
 			if (ImGui::Button("Push Front")) {
@@ -73,14 +84,30 @@ int main() {
 			}
 
 			list_node<int>* cur = some_list.head;
+			list_node<int>* to_remove = nullptr;
 			while (cur) {
 				ImGui::Text("List item: %d", cur->value);
 				ImGui::SameLine();
-				if (ImGui::Button("Delete Item")) {
-					some_list.remove(cur);
+				/* This mouthful of a function call... pain.
+				 *
+				 * It's because Dear ImGui uses element names as a unique
+				 * ID, everything breaks when two elements have the same name.
+				 * An ID can be passed after three #s in the name, though, so
+				 * in this case we simply convert the pointer of the
+				 * current element to a string and append that to the element
+				 * name after three #s.
+				 
+				 * Might be faster to use a stack-allocated buffer and append the
+				 * ID using `sprintf'... Instead of allocating on the three times here.*/
+				if (ImGui::Button(std::string("Delete Item###" + std::to_string((unsigned long long)cur)).c_str())) {
+					to_remove = cur;
 				}
 
 				cur = cur->next;
+			}
+
+			if (to_remove) {
+				some_list.remove(to_remove);
 			}
 		}
 		ImGui::End();
@@ -100,4 +127,53 @@ int main() {
 	glfwDestroyWindow(window);
 
 	glfwTerminate();
+}
+
+static void run_test(const char* name, std::function<bool()> func) {
+	printf("Running test: '%s'... ", name);
+
+	printf(func() ? "OK" : "FAILED");
+	printf("\n");
+}
+
+void run_tests() {
+	run_test("push_front", []() -> bool {
+			list<int> l;
+			l.push_front(2);
+			l.push_front(5);
+			return l.head->value == 5;
+		});
+
+	run_test("push_back", []() -> bool {
+			list<int> l;
+			l.push_back(2);
+			l.push_back(5);
+			return l.tail->value == 5;
+		});
+
+	run_test("count", []() -> bool {
+			list<int> l;
+			l.push_back(2);
+			l.push_back(5);
+			return l.count() == 2;
+		});
+	
+	run_test("first", []() -> bool {
+			list<int> l;
+			l.push_front(2);
+			l.push_front(5);
+			return l.first()->value == 5;
+		});
+
+	run_test("last", []() -> bool {
+			list<int> l;
+			l.push_front(2);
+			l.push_front(5);
+			return l.last()->value == 2;
+		});
+
+	run_test("sort", []() -> bool {
+			/* TODO */
+			return false;
+		});
 }

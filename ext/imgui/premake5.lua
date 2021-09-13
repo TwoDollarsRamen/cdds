@@ -1,7 +1,6 @@
 project "imgui"
 	kind "StaticLib"
 	language "C++"
-	staticruntime "on"
 
 	architecture "x64"
 
