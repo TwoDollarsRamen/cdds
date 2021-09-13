@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <functional>
 
 #include <stdlib.h>
 
@@ -14,8 +15,6 @@ namespace HashFunction {
 
 	template <typename...> struct table_el;
 	template <typename...> struct table;
-
-	typedef std::function<unsigned int(const char*, unsigned int)> HashFunc;
 
 	/* == NOTES == 
 	 *
@@ -182,6 +181,4 @@ namespace HashFunction {
 			delete[] elements;
 		}
 	};
-
-	static HashFunc default = hash;
 };
