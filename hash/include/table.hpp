@@ -92,7 +92,7 @@ namespace HashFunction {
 			/* So, I was using malloc to allocate here, as I do normally for buffers.
 			 * 
 			 * It was crashing when working with std::strings, turns out move semantics
-			 * completely fail when you use malloc. */
+			 * completely fail when you use malloc. That was a waste of 20 minutes. */
 			table_el<key_t, value_t>* els = new table_el<key_t, value_t>[new_capacity];
 			for (int i = 0; i < new_capacity; i++) {
 				els[i].is_null = true;

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <string>
 #include <filesystem>
@@ -8,51 +9,78 @@
 
 using namespace HashFunction;
 
-/* I had this lying around from an old C project.
- * Fairly certain the C file API is faster than the C++ one.
- *
- * It's pretty generic, `term' specifies whether a null terminator
- * should be added to the end of the data, so it can load strings
- * as well as binary data. */
-unsigned char* read_file(const char* path, int* size, bool term) {
-	FILE* file = fopen(path, "rb");
-	if (!file) {
-		fprintf(stderr, "failed to open `%s'.\n", path);
-		return nullptr;
+table<std::string, int> entries;
+
+static int command(int argc, const char** argv) {
+	if (argc > 0) {
+		if (strcmp(argv[0], "exit") == 0) {
+			return 1;
+		} else if (strcmp(argv[0], "help") == 0) {
+			printf(
+				"Possible commands:\n"
+				"	set <key> <value>	set a string key to a integer value.\n"
+				"	get <key>		get and print the value of a key.\n"
+				"	del <key>		remove a key value pair\n"
+				"	exit			quit the application.\n"
+				"	help			display a list of possible commands.\n");
+		}
+	}
+	if (argc > 1) {
+		if (strcmp(argv[0], "get") == 0) {
+			/* Yes, I know catching exceptions are slow.
+			 *
+			 * This application was never designed with
+			 * performance in mind. */
+			try {
+				printf("%d\n", entries[argv[1]]);
+			} catch (const std::exception& e) {
+				printf("%s\n", e.what());
+			}
+		} else if (strcmp(argv[0], "del") == 0) {
+			entries.remove(argv[1]);
+		}
+	}
+	if (argc > 2) {
+		if (strcmp(argv[0], "set") == 0) {
+			entries.set(argv[1], atoi(argv[2]));
+		}
 	}
 
-	fseek(file, 0, SEEK_END);
-	int file_size = ftell(file);
-	rewind(file);
-
-	unsigned char* buffer = (unsigned char*)malloc(file_size + (term ? 1 : 0));
-	int bytes_read = (int)fread(buffer, sizeof(char), file_size, file);
-	if (term) {
-		buffer[bytes_read] = '\0';
-	}
-
-	if (size) {
-		*size = file_size + (term ? 1 : 0);
-	}
-
-	fclose(file);
-	return buffer;
+	return 0;
 }
 
-struct binary_buffer {
-	unsigned char* data;
-	int size;
-};
+static void repl() {
+	char line[1024];
+	for (;;) {
+		printf("[hashtable]$ ");
+
+		if (!fgets(line, sizeof(line), stdin)) {
+			printf("\n");
+			break;
+		}
+
+		/* Remove the newline */
+		line[strlen(line) - 1] = '\0';
+
+		/* Parse the input into an array of strings
+		 * split by spaces, so that commands can
+		 * take arguments. */
+		const char* argv[256];
+		int argc = 0;
+
+		const char* tok = strtok(line, " ");
+		while (tok != nullptr) {
+			argv[argc++] = tok;
+
+			tok = strtok(nullptr, " ");
+		}
+
+		if (command(argc, argv) != 0) {
+			return;
+		}
+	}
+}
 
 int main() {
-	table<std::string, binary_buffer> files;
-
-	binary_buffer b = { 0 };
-	b.data = read_file("include/table.hpp", &b.size, true);
-
-	files.set("include/table.hpp", b);
-
-	printf("%s\n", files["include/table.hpp"].data);
-
-	free(files["include/table.hpp"].data);
+	repl();
 }
