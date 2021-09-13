@@ -8,3 +8,4 @@ include "ext/glfw"
 
 include "linkedlist"
 include "bintree"
+include "hash"
