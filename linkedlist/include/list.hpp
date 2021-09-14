@@ -155,13 +155,9 @@ struct list {
 
 	/* Get the amount of elements in the list */
 	int count() {
-		auto cur = head;
-
 		int r = 0;
 
-		while (cur) {
-			cur = cur->next;
-
+		for (const auto& i : *this) {
 			r++;
 		}
 
