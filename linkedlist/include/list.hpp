@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 /* Represents a single list node */
 template <typename T>
 struct list_node {
@@ -19,6 +21,61 @@ struct list_node {
  * required for templates. */
 template <typename T>
 struct list {
+	struct iterator {
+		list_node<T>* node;
+
+		explicit iterator(list_node<T>* n) {
+			node = n;
+		}
+
+		bool valid() const {
+			return node != nullptr;
+		}
+
+		T& value() const {
+			return node->value;
+		}
+
+		iterator& operator++() {
+			node = node->next;
+
+			return *this;
+		}
+
+		iterator& operator--() {
+			if (node->prev) {
+				node = node->prev;
+			}
+
+			return *this;
+		}
+
+		bool operator==(const iterator& iter) {
+			return iter.node == node;
+		}
+
+		bool operator!=(const iterator& iter) {
+			return iter.node != node;
+		}
+
+		T* operator->() {
+			return &node->value;
+		}
+
+		T& operator*() {
+			return node->value;
+		}
+	};
+
+	iterator begin() const {
+		return iterator(head);
+	}
+
+	/* Null is the end of the list for the iterator */
+	iterator end() const {
+		return iterator(nullptr);
+	}
+
 	list_node<T>* head = nullptr;
 	list_node<T>* tail = nullptr;
 
@@ -124,9 +181,22 @@ struct list {
 	/* Is the list empty? */
 	bool empty() { return !head; }
 
-	/* Sort the list. */
-	void sort() {
-
+	/* Sort the list, using the function to
+	 * compare the two values. */
+	void sort(std::function<bool(const T&, const T&)> cmp) {
+		if (!head) {
+			return;
+		} else {
+			for (auto i = head; i->next; i = i->next) {
+				for (auto j = i->next; j; j = j->next) {
+					if (cmp(i->value, j->value)) {
+						auto tmp = i->value;
+						i->value = j->value;
+						j->value = tmp;
+					}
+				}
+			}
+		}
 	}
 
 	~list() {

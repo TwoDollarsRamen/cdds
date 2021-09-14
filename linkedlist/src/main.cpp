@@ -34,7 +34,7 @@ void run_tests();
 
 int main() {
 	/* Test the linked list */
-	/*run_tests();*/
+	run_tests();
 
 	/* Initialise stuff */
 	glfwInit();
@@ -59,6 +59,16 @@ int main() {
 	/* The list itself */
 	list<int> some_list;
 
+	some_list.push_back(100);
+	some_list.push_back(23);
+	some_list.push_back(22);
+	some_list.push_back(245);
+	some_list.push_back(22);
+
+	for (int i : some_list) {
+		printf("%d\n", i);
+	}
+
 	/* This is the value that will be pushed in to the
 	 * list when the push back or push front buttons are pressed.
 	 * 
@@ -77,7 +87,9 @@ int main() {
 			ImGui::Text("List count: %d", some_list.count());
 
 			if (ImGui::Button("Sort List")) {
-				some_list.sort();
+				some_list.sort([](const int& a, const int& b) -> bool {
+						return a < b;
+					});
 			}
 
 			ImGui::DragInt("###VINPUT", &create_value); ImGui::SameLine();
@@ -182,10 +194,5 @@ void run_tests() {
 			l.push_front(2);
 			l.push_front(5);
 			return l.last()->value == 2;
-		});
-
-	run_test("sort", []() -> bool {
-			/* TODO */
-			return false;
 		});
 }
