@@ -26,28 +26,43 @@ struct list {
 	list_node<T>* insert(list_node<T>* node, const T& v) {
 		auto new_node = new list_node<T>(v);
 
-		new_node->next = node;
-
 		if (node) {
-			new_node->prev = node->prev;
+			new_node->next = node->next;
+			new_node->prev = node;
 
-			if (node->prev) {
-				node->prev->next = new_node;
+			if (node->next) {
+				node->next->prev= new_node;
 			}
-			node->prev = new_node;
+			node->next = new_node;
+		} else {
+			if (!head) {
+				head = new_node;
+			} else {
+				head->prev = new_node;
+				new_node->next = head;
+				head = new_node;
+			}
 		}
 
-		if (head == node) {
-			head = new_node;
-		}
-
-		if (!tail) {
+		if (!tail || node == tail) {
 			tail = new_node;
 		}
 
 		return new_node;
 	}
 
+	/* Add an element with value `v' at the head
+	 * of the list*/
+	list_node<T>* push_front(const T& v) {
+		return insert(nullptr, v);
+	}
+
+	/* Add an element with value `v' at the tail
+	 * of the list */
+	list_node<T>* push_back(const T& v) {
+		return insert(tail, v);
+	}
+	
 	/* Remove node `node' */
 	void remove(list_node<T>* node) {
 		if (!head || !node) { return; }
@@ -71,16 +86,14 @@ struct list {
 		delete node;
 	}
 
-	/* Add an element with value `v' at the head
-	 * of the list*/
-	list_node<T>* push_front(const T& v) {
-		return insert(head, v);
+	/* Remove the head */
+	void remove_head() {
+		remove(head);
 	}
 
-	/* Add an element with value `v' at the tail
-	 * of the list */
-	list_node<T>* push_back(const T& v) {
-		return insert(tail, v);
+	/* Remove the tail */
+	void remove_tail() {
+		remove(tail);
 	}
 
 	/* Get the amount of elements in the list */

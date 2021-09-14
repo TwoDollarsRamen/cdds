@@ -33,8 +33,10 @@ static void framebuffer_size_func(GLFWwindow* window, int x, int y) {
 void run_tests();
 
 int main() {
-	run_tests();
+	/* Test the linked list */
+	/*run_tests();*/
 
+	/* Initialise stuff */
 	glfwInit();
 
 	GLFWwindow* window = glfwCreateWindow(1024, 768, "Linked List demo", nullptr, nullptr);
@@ -54,10 +56,14 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL2_Init();
 
+	/* The list itself */
 	list<int> some_list;
-	int create_value = 0;
 
-	list_node<int>* selected_node = nullptr;
+	/* This is the value that will be pushed in to the
+	 * list when the push back or push front buttons are pressed.
+	 * 
+	 * It's value is set by Daer ImGui Widget. */
+	int create_value = 0;
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -66,6 +72,7 @@ int main() {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		/* The main GUI. */
 		if (ImGui::Begin("Linked List Demo")) {
 			ImGui::Text("List count: %d", some_list.count());
 
@@ -112,6 +119,7 @@ int main() {
 		}
 		ImGui::End();
 
+		/* Draw & update */
 		ImGui::Render();
 		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
@@ -119,6 +127,7 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
+	/* Free everything */
 	ImGui_ImplOpenGL2_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 
@@ -129,6 +138,8 @@ int main() {
 	glfwTerminate();
 }
 
+/* Run a test. The function for the test must return true if the test passed
+ * and return false if it failed. */
 static void run_test(const char* name, std::function<bool()> func) {
 	printf("Running test: '%s'... ", name);
 
@@ -136,6 +147,7 @@ static void run_test(const char* name, std::function<bool()> func) {
 	printf("\n");
 }
 
+/* Run all the tests */
 void run_tests() {
 	run_test("push_front", []() -> bool {
 			list<int> l;
@@ -157,7 +169,7 @@ void run_tests() {
 			l.push_back(5);
 			return l.count() == 2;
 		});
-	
+
 	run_test("first", []() -> bool {
 			list<int> l;
 			l.push_front(2);

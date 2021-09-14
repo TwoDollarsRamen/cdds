@@ -20,7 +20,7 @@ namespace HashFunction {
 	template <typename...> struct table_el;
 	template <typename...> struct table;
 
-	/* == NOTES == 
+	/* == NOTES ==
 	 *
 	 * Collision resolution is handled using the open addressing
 	 * method. If there is a collison, we search for the next empty
@@ -44,7 +44,7 @@ namespace HashFunction {
 		 * recently deleted. The reason why we can't just
 		 * set is_null to true on deletion is because of the
 		 * way that I chose to handle collision resolution.
-		 * If the element is null, it is returned in the 
+		 * If the element is null, it is returned in the
 		 * find function. This means any entries after it
 		 * are unreachable. is_tombstone is used as a flag
 		 * to skip over the entry, instead of returning it.
