@@ -59,16 +59,6 @@ int main() {
 	/* The list itself */
 	list<int> some_list;
 
-	some_list.push_back(100);
-	some_list.push_back(23);
-	some_list.push_back(22);
-	some_list.push_back(245);
-	some_list.push_back(22);
-
-	for (int i : some_list) {
-		printf("%d\n", i);
-	}
-
 	/* This is the value that will be pushed in to the
 	 * list when the push back or push front buttons are pressed.
 	 * 
