@@ -1,9 +1,7 @@
-*.sln
 *.make
 Makefile
 bin
 obj
-*.vcxproj
 *.user
 *.filters
 *.vs
