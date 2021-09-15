@@ -14,7 +14,7 @@
 Release executables are in the `./bin` folder.
 
  - All of the projects in the `./fromtemplate/` directory must have their
-architectures set to `x64`.
+configurations set to `x64`.
  - The Linked List project needs to have it's `res` folder placed in the
-program's working directory. This is relevant when running outside of
-the IDE.
+program's working directory, or next to the program when running externally
+to the IDE.

@@ -35,11 +35,16 @@ bool BinaryTree::IsEmpty() const
 // Smaller elements are placed to the left, larger onces are placed to the right.
 void BinaryTree::Insert(int a_nValue) /* Literally have no idea what these naming conventions mean. */
 {
+	/* The node is inserted at the root if the tree is empty */
 	if (!m_pRoot) {
 		m_pRoot = new TreeNode(a_nValue);
 		return;
 	}
 	
+	/* Traverse down the correct branches of the tree
+	 * to find the end; smaller numbers get places
+	 * on the left branch, larger values are placed
+	 * on the right branch. */
 	TreeNode* parent = nullptr;
 	for (auto cur = m_pRoot; cur;) {
 		parent = cur;
@@ -55,6 +60,7 @@ void BinaryTree::Insert(int a_nValue) /* Literally have no idea what these namin
 		}
 	}
 
+	/* Create the branch on the correct parent. */
 	if (a_nValue < parent->m_value) {
 		parent->m_left = new TreeNode(a_nValue);
 		return;
@@ -72,6 +78,7 @@ TreeNode* BinaryTree::Find(int a_nValue)
 
 bool BinaryTree::FindNode(int a_nSearchValue, TreeNode*& ppOutNode, TreeNode*& ppOutParent)
 {
+	/* Traverse to find the value. */
 	TreeNode* parent = nullptr;
 	for (auto cur = m_pRoot; cur;) {
 		if (a_nSearchValue == cur->m_value) {
@@ -102,6 +109,7 @@ void BinaryTree::Remove(int a_nValue)
 	if (!node) { return; }
 
 	if (node->m_right) {
+		/* Find the minimum value on the right branch */
 		int min = std::numeric_limits<int>::max();
 		auto n = node->m_right;
 		for (; n; n = n->m_left) {
@@ -111,6 +119,7 @@ void BinaryTree::Remove(int a_nValue)
 		auto min_node = Find(min);
 		node->m_value = min;
 
+		/* Fill in any gaps left by the deletion */
 		if (parent) {
 			if (a_nValue == parent->m_left->m_value) {
 				parent->m_left = min_node->m_right;
@@ -120,6 +129,7 @@ void BinaryTree::Remove(int a_nValue)
 			}
 		}
 	} else {
+		/* Fill in any gaps left by the deletion */
 		if (parent) {
 			if (parent->m_left && a_nValue == parent->m_left->m_value) {
 				parent->m_left = node->m_left;
@@ -129,6 +139,8 @@ void BinaryTree::Remove(int a_nValue)
 			}
 		}
 
+		/* If it's the root being deleted,
+		 * set a new root. */
 		if (a_nValue == m_pRoot->m_value) {
 			m_pRoot = node->m_left;
 		}
