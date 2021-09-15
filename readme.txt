@@ -1,4 +1,4 @@
- == Submission Structure ==
+# Submission Structure
 
 | Project		| Directory				|
 |---------------------------------------------------------------|
@@ -9,7 +9,7 @@
 | IPC			| ./fromtemplate/CDDS_IPC_EntityDisplay	|
 |			| ./fromtemplate/CDDS_IPC_EntityEditor	|
 
-== Build Instructions ==
+# Build Instructions
 
 Release executables are in the `./bin` folder.
 
