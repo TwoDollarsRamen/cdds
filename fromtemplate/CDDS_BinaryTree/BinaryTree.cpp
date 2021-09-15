@@ -33,7 +33,7 @@ bool BinaryTree::IsEmpty() const
 
 // Insert a new element into the tree.
 // Smaller elements are placed to the left, larger onces are placed to the right.
-void BinaryTree::Insert(int a_nValue)
+void BinaryTree::Insert(int a_nValue) /* Literally have no idea what these naming conventions mean. */
 {
 	if (!m_pRoot) {
 		m_pRoot = new TreeNode(a_nValue);
@@ -76,11 +76,10 @@ bool BinaryTree::FindNode(int a_nSearchValue, TreeNode*& ppOutNode, TreeNode*& p
 	for (auto cur = m_pRoot; cur;) {
 		if (a_nSearchValue == cur->m_value) {
 			ppOutNode = cur;
-			ppOutParent = cur;
+			ppOutParent = parent;
 			return true;
 		} else {
 			parent = cur;
-
 			if (a_nSearchValue < cur->m_value) {
 				cur = cur->m_left;
 			} else {
@@ -100,10 +99,10 @@ void BinaryTree::Remove(int a_nValue)
 
 	FindNode(a_nValue, node, parent);
 	
-	if (!node || !parent) { return;  }
+	if (!node) { return; }
 
 	if (node->m_right) {
-		int min = std::numeric_limits<float>::max();
+		int min = std::numeric_limits<int>::max();
 		auto n = node->m_right;
 		for (; n; n = n->m_left) {
 			if (n->m_value < min) { min = n->m_value; }
@@ -112,44 +111,34 @@ void BinaryTree::Remove(int a_nValue)
 		auto min_node = Find(min);
 		node->m_value = min;
 
-		if (a_nValue == parent->m_left->m_value) {
-			parent->m_left = min_node->m_right;
-		}
-		else if (a_nValue == parent->m_right->m_value) {
-			parent->m_right = min_node->m_right;
+		if (parent) {
+			if (a_nValue == parent->m_left->m_value) {
+				parent->m_left = min_node->m_right;
+			}
+			else if (a_nValue == parent->m_right->m_value) {
+				parent->m_right = min_node->m_right;
+			}
 		}
 	} else {
-		if (parent->m_left && a_nValue == parent->m_left->m_value) {
-			parent->m_left = node->m_left;
-		} else if (parent->m_right && a_nValue == parent->m_right->m_value) {
-			parent->m_right = node->m_left;
+		if (parent) {
+			if (parent->m_left && a_nValue == parent->m_left->m_value) {
+				parent->m_left = node->m_left;
+			}
+			else if (parent->m_right && a_nValue == parent->m_right->m_value) {
+				parent->m_right = node->m_left;
+			}
 		}
+
 		if (a_nValue == m_pRoot->m_value) {
 			m_pRoot = node->m_left;
 		}
 	}
-}
 
-void BinaryTree::PrintOrdered()
-{
-	PrintOrderedRecurse(m_pRoot);
-	cout << endl;
-}
+	if (node == m_pRoot) {
+		m_pRoot = nullptr;
+	}
 
-void BinaryTree::PrintOrderedRecurse(TreeNode* pNode)
-{
-
-}
-
-void BinaryTree::PrintUnordered()
-{
-    PrintUnorderedRecurse(m_pRoot);
-	cout << endl;
-}
-
-void BinaryTree::PrintUnorderedRecurse(TreeNode* pNode)
-{
-
+	delete node;
 }
 
 void BinaryTree::Draw(TreeNode* selected)
