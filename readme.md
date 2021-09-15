@@ -1,7 +1,7 @@
 # Submission Structure
 
 | Project		| Directory				|
------------------------------------------------------------------
+|---------------------------------------------------------------|
 | Hash Table		| ./hash/				|
 | Linked List		| ./linkedlist/				|
 | List Tests		| ./listtest/				|
