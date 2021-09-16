@@ -11,7 +11,7 @@
 
 == Build Instructions ==
 
-Release executables are in the `./bin` folder.
+Release executables are in the `./releaseexecs` folder.
 
  - All of the projects in the `./fromtemplate/` directory must have their
 configurations set to `x64`.

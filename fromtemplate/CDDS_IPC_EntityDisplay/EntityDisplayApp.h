@@ -28,4 +28,6 @@ protected:
 
 	// an array of an unknown number of entities
 	std::vector<Entity> m_entities;
+
+	HANDLE handle;
 };

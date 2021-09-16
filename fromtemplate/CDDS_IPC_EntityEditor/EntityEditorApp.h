@@ -30,5 +30,5 @@ protected:
 	enum { ENTITY_COUNT = 10 };
 	Entity m_entities[ENTITY_COUNT];
 
-	HANDLE h;
+	HANDLE handle;
 };

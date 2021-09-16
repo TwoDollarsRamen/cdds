@@ -5,13 +5,27 @@ EntityDisplayApp::EntityDisplayApp(int screenWidth, int screenHeight) : m_screen
 }
 
 EntityDisplayApp::~EntityDisplayApp() {
-
+	CloseHandle(handle);
 }
 
 bool EntityDisplayApp::Startup() {
 
 	InitWindow(m_screenWidth, m_screenHeight, "EntityDisplayApp");
 	SetTargetFPS(60);
+
+	handle = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"EntityMemory");
+	if (!handle) { return false; }
+
+	void* data = MapViewOfFile(handle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int));
+
+	int count = *(int*)data;
+	Entity* entities = (Entity*)((int*)data + 1);
+
+	for (int i = 0; i < count; i++) {
+		m_entities.push_back(entities[i]);
+	}
+
+	UnmapViewOfFile(data);
 
 	return true;
 }
@@ -22,7 +36,16 @@ void EntityDisplayApp::Shutdown() {
 }
 
 void EntityDisplayApp::Update(float deltaTime) {
+	void* data = MapViewOfFile(handle, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int));
 
+	int count = *(int*)data;
+	Entity* entities = (Entity*)((int*)data + 1);
+
+	for (int i = 0; i < count; i++) {
+		m_entities[i] = entities[i];
+	}
+
+	UnmapViewOfFile(data);
 }
 
 void EntityDisplayApp::Draw() {

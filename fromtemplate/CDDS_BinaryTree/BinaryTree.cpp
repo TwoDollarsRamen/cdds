@@ -101,56 +101,49 @@ bool BinaryTree::FindNode(int a_nSearchValue, TreeNode*& ppOutNode, TreeNode*& p
 
 void BinaryTree::Remove(int a_nValue)
 {
-	TreeNode* parent;
-	TreeNode* node;
+	TreeNode* parent = nullptr;
+	TreeNode* node = nullptr;
 
-	FindNode(a_nValue, node, parent);
-	
-	if (!node) { return; }
+	if (!FindNode(a_nValue, node, parent)) {
+		return;
+	}
 
 	if (node->m_right) {
 		/* Find the minimum value on the right branch */
-		int min = std::numeric_limits<int>::max();
 		auto n = node->m_right;
-		for (; n; n = n->m_left) {
-			if (n->m_value < min) { min = n->m_value; }
+		auto nparent = node;
+		for (; n->m_left; nparent = n, n = n->m_left) {
+			
 		}
 
-		auto min_node = Find(min);
-		node->m_value = min;
+		node->m_value = n->m_value;
 
 		/* Fill in any gaps left by the deletion */
-		if (parent) {
-			if (a_nValue == parent->m_left->m_value) {
-				parent->m_left = min_node->m_right;
-			}
-			else if (a_nValue == parent->m_right->m_value) {
-				parent->m_right = min_node->m_right;
-			}
+		if (n == nparent->m_left) {
+			nparent->m_left = n->m_right;
+		} else if (n == nparent->m_right) {
+			nparent->m_right = n->m_right;
 		}
+
+		delete n;
 	} else {
 		/* Fill in any gaps left by the deletion */
 		if (parent) {
-			if (parent->m_left && a_nValue == parent->m_left->m_value) {
+			if (node == parent->m_left) {
 				parent->m_left = node->m_left;
-			}
-			else if (parent->m_right && a_nValue == parent->m_right->m_value) {
+			} else if (node == parent->m_right) {
 				parent->m_right = node->m_left;
 			}
 		}
 
 		/* If it's the root being deleted,
 		 * set a new root. */
-		if (a_nValue == m_pRoot->m_value) {
+		if (node == m_pRoot) {
 			m_pRoot = node->m_left;
 		}
-	}
 
-	if (node == m_pRoot) {
-		m_pRoot = nullptr;
+		delete node;
 	}
-
-	delete node;
 }
 
 void BinaryTree::Draw(TreeNode* selected)
